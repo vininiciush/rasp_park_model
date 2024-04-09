@@ -4,18 +4,23 @@ import serial
 import json
 import requests
 
-HOST = 'http://localhost:8080'
+HOST = 'http://localhost:8085'
 PATH = '/v1/sensors/receive'
-PORT = '/dev/ttyACM0'
+PORTS = ['/dev/ttyACM0', '/dev/ttyUSB0']
 BAUDRATE = 9600
 
-ser = serial.Serial(
-        port=PORT,
-        baudrate = BAUDRATE,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=1)
+serialInputs = []
+
+for PORT in PORTS:
+        ser = serial.Serial(
+                port=PORT,
+                baudrate = BAUDRATE,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                timeout=1)
+
+        serialInputs.append(ser)
 
 def sendDataToApi(body):
         response = requests.post(HOST + PATH, json = body)
@@ -29,11 +34,12 @@ def convertMessageToJson(message):
 
 def startReading():
         while 1:
-                message = ser.readline()
-                json_message = convertMessageToJson(message)
+                for serial in serialInputs:
+                        message = serial.readline()
+                        json_message = convertMessageToJson(message)
 
-                if(json_message != None):
-                        print(json_message)
-                        sendDataToApi(json_message)
+                        if(json_message != None):
+                                print(json_message)
+                                sendDataToApi(json_message)
 
 startReading()

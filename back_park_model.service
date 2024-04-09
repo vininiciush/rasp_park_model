@@ -1,0 +1,14 @@
+[Unit]
+Description=My Sample Service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=java -jar PATH_TO_FOLDER_WHERE_INSTAL_SCRIPT_IS/back_park_model/target/parking_model-0.0.1-SNAPSHOT.jar
+Environment="MYSQL_HOST=YOUR_MYSQL_HOST"
+Environment="MYSQL_PORT=YOUR_MYSQL_PORT"
+Environment="MYSQL_USER=YOUR_MYSQL_USER"
+Environment="MYSQL_PASSWORD=YOUR_MYSQL_PASSWORD"
+
+[Install]
+WantedBy=multi-user.target
